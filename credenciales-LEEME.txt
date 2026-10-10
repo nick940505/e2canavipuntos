@@ -1,0 +1,6 @@
+Coloca en esta carpeta la llave JSON de la cuenta de servicio de Firestore y
+renómbrala exactamente como:
+
+firestore-service-account.json
+
+No compartas esa llave ni la subas a Git.

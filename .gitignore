@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.venv/
+.venv313/
+build/
+E2CanaVIPuntos.spec
+release/*
+!release/E2CanaVIPuntos-Windows.zip
