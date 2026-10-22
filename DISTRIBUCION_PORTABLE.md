@@ -2,17 +2,13 @@
 
 Esta carpeta ya contiene la aplicación y sus dependencias. No instales Python ni ejecutes `pip` en el computador destino.
 
-## Antes de abrir por primera vez
-
-1. Dentro de esta carpeta, crea una carpeta llamada `credenciales`.
-2. Copia la llave JSON de la cuenta de servicio de Firestore en esa carpeta.
-3. Renómbrala exactamente como `firestore-service-account.json`.
-
-La llave es confidencial: no la envíes por correo ni la incluyas en repositorios públicos.
-
 ## Abrir la aplicación
 
-Haz doble clic en `Iniciar E2 Cana VIPuntos.cmd`.
+Haz doble clic en `E2CanaVIPuntos.exe`. La aplicación ya incluye sus dependencias
+y la credencial de Firestore, por lo que no requiere configuración adicional.
+
+La carpeta contiene una credencial confidencial. Distribúyela solo por un canal
+privado y no la publiques en repositorios ni servicios de almacenamiento públicos.
 
 ## Lector NFC ACR122U
 

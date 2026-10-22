@@ -1,10 +1,17 @@
 $ErrorActionPreference = "Stop"
 
-# Genera una carpeta autocontenida para Windows. No incluye secretos ni
-# credenciales de Firestore: se agregan al momento de distribuir la app.
+# Genera una carpeta autocontenida para Windows, incluida la credencial de
+# Firestore configurada en este equipo. No se debe versionar el ZIP resultante.
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $python = Join-Path $projectRoot ".venv313\Scripts\python.exe"
-$releaseRoot = Join-Path $projectRoot "release"
+$releaseRoot = Join-Path $projectRoot "release\privado"
+$credentialPath = [Environment]::GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "User")
+if (-not $credentialPath) {
+    $credentialPath = [Environment]::GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Machine")
+}
+if (-not $credentialPath -or -not (Test-Path -LiteralPath $credentialPath)) {
+    throw "No se encontro una credencial valida en GOOGLE_APPLICATION_CREDENTIALS."
+}
 
 & $python -m PyInstaller `
     --noconfirm `
@@ -19,14 +26,18 @@ $releaseRoot = Join-Path $projectRoot "release"
     --collect-all grpc `
     --collect-all smartcard `
     --distpath $releaseRoot `
-    --workpath (Join-Path $projectRoot "build") `
+    --workpath (Join-Path $projectRoot "build-privado") `
     --specpath $projectRoot `
     (Join-Path $projectRoot "app.py")
+
+if ($LASTEXITCODE -ne 0) {
+    throw "PyInstaller no pudo generar el paquete portable."
+}
 
 $appFolder = Join-Path $releaseRoot "E2CanaVIPuntos"
 Copy-Item (Join-Path $projectRoot "DISTRIBUCION_PORTABLE.md") $appFolder
 Copy-Item (Join-Path $projectRoot "Iniciar E2 Cana VIPuntos.cmd") $appFolder
 New-Item -ItemType Directory -Force (Join-Path $appFolder "credenciales") | Out-Null
-Copy-Item (Join-Path $projectRoot "credenciales-LEEME.txt") (Join-Path $appFolder "credenciales\LEEME.txt")
+Copy-Item -LiteralPath $credentialPath -Destination (Join-Path $appFolder "credenciales\firestore-service-account.json")
 
 Write-Host "Listo: $appFolder"

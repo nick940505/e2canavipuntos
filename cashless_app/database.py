@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -11,12 +12,23 @@ from google.cloud import firestore
 _client: firestore.Client | None = None
 
 
+def _bundled_credential_path() -> Path | None:
+    """Obtiene la credencial incluida junto al ejecutable portable."""
+    if not getattr(sys, "frozen", False):
+        return None
+    candidate = Path(sys.executable).resolve().parent / "credenciales" / "firestore-service-account.json"
+    return candidate if candidate.is_file() else None
+
+
 def get_firestore_client() -> firestore.Client:
     global _client
     if _client is None:
         credential_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
         if not credential_path:
-            raise RuntimeError("Falta la variable GOOGLE_APPLICATION_CREDENTIALS.")
+            bundled_credential = _bundled_credential_path()
+            credential_path = str(bundled_credential) if bundled_credential else None
+        if not credential_path:
+            raise RuntimeError("No se encontro la credencial de Firestore incluida en la aplicacion.")
         if not Path(credential_path).is_file():
             raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS no apunta a un archivo valido.")
         _client = firestore.Client()

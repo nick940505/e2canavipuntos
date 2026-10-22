@@ -5,6 +5,7 @@ __pycache__/
 .venv/
 .venv313/
 build/
+build-privado/
 E2CanaVIPuntos.spec
 release/*
 !release/E2CanaVIPuntos-Windows.zip
